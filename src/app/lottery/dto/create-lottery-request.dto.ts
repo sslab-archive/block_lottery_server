@@ -1,4 +1,4 @@
-import { BlockInfo } from '../../../domain/block';
+import { BlockInfo } from '../../../domain/block/block';
 import { DrawType } from '../../../domain/lottery/lottery';
 import { Prize } from '../../../domain/prize';
 import { Type } from 'class-transformer';

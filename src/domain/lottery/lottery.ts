@@ -1,6 +1,6 @@
 import { Participant } from '../participant';
 import { Prize } from '../prize';
-import { BlockInfo } from '../block';
+import { BlockInfo } from '../block/block';
 import { Transaction } from '../transaction/transaction';
 import { CreateLotteryRequestDTO } from '../../app/lottery/dto/create-lottery-request.dto';
 import { BadRequestException } from '@nestjs/common';
