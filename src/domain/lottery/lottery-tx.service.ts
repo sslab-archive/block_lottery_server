@@ -1,5 +1,7 @@
-import { Lottery } from '../lottery';
+import { Lottery } from './lottery';
 
 export interface LotteryTxService {
-  sendLotteryCreateTx(url: string, jsonArgs: string): Lottery;
+  sendCreateLotteryTx(url: string, jsonArgs: string): Lottery;
+  sendQueryLotteryTx(url: string, jsonArgs: string): Lottery;
+  sendQueryLotteriesTx(url: string, jsonArgs: string): Lottery[];
 }

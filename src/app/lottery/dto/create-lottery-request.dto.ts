@@ -1,5 +1,5 @@
 import { BlockInfo } from '../../../domain/block';
-import { DrawType } from '../../../domain/lottery';
+import { DrawType } from '../../../domain/lottery/lottery';
 import { Prize } from '../../../domain/prize';
 import { Type } from 'class-transformer';
 import { ArrayNotEmpty, IsEnum, IsNotEmpty, IsPositive, ValidateNested } from 'class-validator';
