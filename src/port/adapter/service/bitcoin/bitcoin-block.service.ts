@@ -15,7 +15,7 @@ export class BitcoinBlockService implements BlockService {
     return this.httpService.get(this.GET_BLOCK_URL + targetHeight.toString())
       .toPromise()
       .then(async res => {
-        const blockInfo = new BlockInfo(BlockType.BITCOIN, res.data.hash, Math.floor(Date.parse(res.data.time) / 1000), res.data.height);
+        const blockInfo = BlockInfo.fromData(BlockType.BITCOIN, res.data.hash, Math.floor(Date.parse(res.data.time) / 1000), res.data.height);
 
         const errors = await validate(blockInfo);
         if (errors.length > 0) {
@@ -46,7 +46,7 @@ export class BitcoinBlockService implements BlockService {
     return this.httpService.get(this.LATEST_BLOCK_URL)
       .toPromise()
       .then(async res => {
-        const blockInfo = new BlockInfo(BlockType.BITCOIN, res.data.hash, Math.floor(Date.parse(res.data.time) / 1000), res.data.height);
+        const blockInfo = BlockInfo.fromData(BlockType.BITCOIN, res.data.hash, Math.floor(Date.parse(res.data.time) / 1000), res.data.height);
 
         const errors = await validate(blockInfo);
         if (errors.length > 0) {

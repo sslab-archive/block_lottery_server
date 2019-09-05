@@ -1,11 +1,16 @@
-import { HttpService, Inject, Injectable } from '@nestjs/common';
+import { HttpService, Inject, Injectable, Type } from '@nestjs/common';
 import { LotteryTxService } from '../../../../../domain/lottery/lottery-tx.service';
-import { CreateLotteryTxRequestDto } from '../../../../../domain/lottery/dto/create-lottery-tx-request.dto';
+
 import { Lottery } from '../../../../../domain/lottery/lottery';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { ID } from '../../../../../common/config/serviceprovider-info';
 import { CHAINCODE_NAME, CHANNEL_NAME, PEER_LIST } from '../../../../../common/config/fabric-info';
+import { QueryLotteryTxRequestDto } from '../../../../../domain/lottery/dto/query-lottery-tx-request.dto';
+import { CreateLotteryTxRequestDto } from '../../../../../domain/lottery/dto/create-lottery-tx-request.dto';
+import { ClassType } from 'class-transformer/ClassTransformer';
+import { ParticipateLotteryTxRequestDto } from '../../../../../domain/lottery/dto/participate-lottery-tx-request.dto';
+import { DrawLotteryTxRequestDto } from '../../../../../domain/lottery/dto/drawLotteryTxRequest.dto';
 
 @Injectable()
 export class FabricLotteryTxService implements LotteryTxService {
@@ -15,8 +20,8 @@ export class FabricLotteryTxService implements LotteryTxService {
     fcn: 'invoke',
   };
   private BASE_HEADERS = {
-    userName: ID,
-    orgName: 'Org1',
+    'user-name': ID,
+    'org-name': 'Org1',
   };
 
   private CHAINCODE_URL = this.BASE_URL + '/channels/' + CHANNEL_NAME + '/chaincodes/' + CHAINCODE_NAME;
@@ -27,15 +32,46 @@ export class FabricLotteryTxService implements LotteryTxService {
   async sendCreateLotteryTx(dto: CreateLotteryTxRequestDto): Promise<Lottery> {
     const jsonArgs = JSON.stringify(dto);
 
-    return this.httpService.post(this.CHAINCODE_URL, { ...this.BASE_BODY, args: ['createLottery', jsonArgs] }, { headers: { ...this.BASE_HEADERS } })
+    return this.sendTx('createLotteryEvent', jsonArgs, Lottery);
+  }
+
+  async sendQueryLotteriesTx(dto: QueryLotteryTxRequestDto): Promise<Lottery[]> {
+    const jsonArgs = JSON.stringify(dto);
+
+    return this.sendTx<Lottery[]>('queryLotteryEvent', jsonArgs, Lottery);
+  }
+
+  async sendQueryLotteryTx(dto: QueryLotteryTxRequestDto): Promise<Lottery> {
+    const jsonArgs = JSON.stringify(dto);
+
+    return this.sendTx<Lottery>('queryLotteryEvent', jsonArgs, Lottery);
+  }
+
+  async sendParticipateLotteryTx(dto: ParticipateLotteryTxRequestDto): Promise<Lottery> {
+    const jsonArgs = JSON.stringify(dto);
+    return this.sendTx<Lottery>('participateLotteryEvent', jsonArgs, Lottery);
+  }
+
+  async sendDrawLotteryTx(dto: DrawLotteryTxRequestDto): Promise<Lottery> {
+    const jsonArgs = JSON.stringify(dto);
+
+    return this.sendTx<Lottery>('drawLotteryEvent', jsonArgs, Lottery);
+  }
+
+  private async sendTx<T>(chainFuncName: string, jsonArgs: string, classType: ClassType<any>): Promise<T> {
+    return this.httpService.post(this.CHAINCODE_URL,
+      { ...this.BASE_BODY, args: [chainFuncName, jsonArgs] },
+      { headers: { ...this.BASE_HEADERS } })
       .toPromise()
       .then(async res => {
-          const l: Lottery = plainToClass(res.data, Lottery);
+          if (res.data.success === false) {
+            throw Error(res.data.message);
+          }
+          const l: T = plainToClass(classType, JSON.parse(res.data.response) as T);
           const errors = await validate(l);
           if (errors.length > 0) {
-            throw Error('invalid lottery return from txRequest');
+            throw Error(errors.toString());
           }
-
           return l;
         },
       ).catch(e => {
@@ -43,11 +79,4 @@ export class FabricLotteryTxService implements LotteryTxService {
       });
   }
 
-  async sendQueryLotteriesTx(jsonArgs: string): Promise<Lottery[]> {
-    return [];
-  }
-
-  async sendQueryLotteryTx(jsonArgs: string): Promise<Lottery> {
-    return undefined;
-  }
 }

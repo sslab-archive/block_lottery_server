@@ -6,24 +6,22 @@ export enum BlockType {
 }
 
 export class BlockInfo {
-  @IsEnum(BlockType)
   @IsNotEmpty()
+  @IsEnum(BlockType)
   blockType: BlockType;
 
-  @IsNotEmpty()
   hash: string;
 
-  @IsNotEmpty()
   timestamp: number;
 
-  @IsNotEmpty()
   height: number;
 
-  constructor(blockType: BlockType, hash: string, timestamp: number, height: number) {
-    this.blockType = blockType;
-    this.hash = hash;
-    this.timestamp = timestamp;
-    this.height = height;
+  static fromData(blockType: BlockType, hash: string, timestamp: number, height: number): BlockInfo {
+    const b = new BlockInfo();
+    b.blockType = blockType;
+    b.hash = hash;
+    b.timestamp = timestamp;
+    b.height = height;
+    return b;
   }
-
 }

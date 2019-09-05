@@ -31,7 +31,7 @@ describe('BitcoinBlockService', () => {
   describe('#getTargetBlock()', () => {
     it('should return block 591802', async () => {
       expect(await bitcoinBlockService.getTargetBlock(591802))
-        .toEqual(new BlockInfo(BlockType.BITCOIN, '00000000000000000014991959287b2c292ab60dea2046b67250d351d696a2d8', 1566799004, 591802));
+        .toEqual(BlockInfo.fromData(BlockType.BITCOIN, '00000000000000000014991959287b2c292ab60dea2046b67250d351d696a2d8', 1566799004, 591802));
     });
   });
 });

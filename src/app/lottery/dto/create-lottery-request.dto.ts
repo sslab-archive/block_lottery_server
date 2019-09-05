@@ -1,12 +1,15 @@
-import { BlockInfo } from '../../../domain/block/block';
+import { ArrayNotEmpty, IsEnum, IsNotEmpty, IsPositive, IsString, ValidateNested } from 'class-validator';
 import { DrawType } from '../../../domain/lottery/lottery';
-import { Prize } from '../../../domain/prize';
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsEnum, IsNotEmpty, IsPositive, ValidateNested } from 'class-validator';
+import { Prize } from '../../../domain/prize';
+import { BlockInfo } from '../../../domain/block/block';
 
 export class CreateLotteryRequestDTO {
   @IsNotEmpty()
   eventName: string;
+
+  @IsNotEmpty()
+  contents: string;
 
   @IsPositive()
   deadlineTime: number;
@@ -14,7 +17,7 @@ export class CreateLotteryRequestDTO {
   @IsNotEmpty()
   maxParticipant: number;
 
-  @IsEnum(DrawType)
+  @IsEnum(DrawType, { each: true })
   @ArrayNotEmpty()
   drawTypes: DrawType[];
 

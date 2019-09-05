@@ -21,15 +21,15 @@ export class ValidationPipe implements PipeTransform<any> {
     if (errorsList.length > 0) {
       const errors = [];
       for (const error of errorsList) {
-        const errorsObject = error.constraints;
-        const { isNotEmpty } = errorsObject;
-        if (isNotEmpty) {
-          const parameter = isNotEmpty.split(' ')[0];
+        // const errorsObject = error.constraints;
+        // const { isNotEmpty } = errorsObject;
+        // if (isNotEmpty) {
+        //   const parameter = isNotEmpty.split(' ')[0];
           errors.push({
-            title: `The ${parameter} parameter is required.`,
-            parameter: `${parameter}`,
+            title: error.value,
+            msg: error.toString(),
           });
-        }
+        // }
       }
       if (errors.length > 0) {
         throw new HttpException({ errors }, HttpStatus.BAD_REQUEST);

@@ -4,6 +4,7 @@ import { BlockInfo } from '../../block/block';
 
 export class CreateLotteryTxRequestDto {
   eventName: string;
+  contents: string;
   deadlineTime: number;
   maxParticipant: number;
   drawTypes: DrawType[];
