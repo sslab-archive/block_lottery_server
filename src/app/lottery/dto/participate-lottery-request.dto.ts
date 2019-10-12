@@ -10,4 +10,6 @@ export class ParticipateLotteryRequestDTO {
   @IsString()
   @IsNotEmpty()
   participantInfo: string;
+
+  authParams: string[];
 }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpService, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateLotteryRequestDTO } from './dto/create-lottery-request.dto';
 import { DrawType, Lottery } from '../../domain/lottery/lottery';
 import { LotteryTxService } from '../../domain/lottery/lottery-tx.service';
@@ -17,7 +17,8 @@ import { DrawLotteryTxRequestDto } from '../../domain/lottery/dto/drawLotteryTxR
 export class LotteryService {
   constructor(
     @Inject('LotteryTxService') private readonly txService: LotteryTxService,
-    @Inject('BlockService') private readonly blockService: BlockService) {
+    @Inject('BlockService') private readonly blockService: BlockService,
+    @Inject('HttpService') private readonly httpService: HttpService) {
   }
 
   async createLottery(createRequest: CreateLotteryRequestDTO): Promise<Lottery> {
@@ -31,6 +32,8 @@ export class LotteryService {
     createLotteryTxDTO.prizes = lottery.prizes;
     createLotteryTxDTO.contents = lottery.contents;
     createLotteryTxDTO.submitterID = ID;
+    createLotteryTxDTO.authURL = lottery.authURL;
+    createLotteryTxDTO.authParams = lottery.authParams;
     createLotteryTxDTO.submitterAddress = 'not impl';
 
     const targetHeight = await this.blockService.makeTargetBlockHeight(createRequest.deadlineTime);
@@ -64,6 +67,34 @@ export class LotteryService {
     participateLotteryTxDTO.participant.information = participateRequest.participantInfo;
     participateLotteryTxDTO.submitterID = ID;
     participateLotteryTxDTO.submitterAddress = 'not Impl';
+
+    const event = await this.getLotteryByUUID(participateRequest.eventUUID);
+    if (event.authURL.length > 0) {
+      let authReturn;
+      try {
+        authReturn = await this.httpService.post(event.authURL,
+          { authParams: participateRequest.authParams })
+          .toPromise();
+      } catch (e) {
+        if (e.response.status === 404) {
+          throw new HttpException('auth URL 이 이상합니다. 이벤트 관리자에게 문의하십시오.', HttpStatus.BAD_REQUEST);
+        } else if (e.response.status === 400) {
+          throw new HttpException('인증에 입력한 값을 확인해주세요', HttpStatus.BAD_REQUEST);
+        } else if (e.response.status === 409) {
+          throw new HttpException('이미 참여했습니다. 참여 여부를 확인해주세요.', HttpStatus.BAD_REQUEST);
+        } else {
+          throw new HttpException('인증서버의 알 수 없는 오류입니다 : ' + e.response.status, HttpStatus.BAD_REQUEST);
+        }
+      }
+      if (authReturn.status === 202) {
+        if (!authReturn.data.authInformation) {
+          throw new HttpException('인증에 사용된 information 이 존재하지 않습니다. 이벤트 관리자에게 문의하십시오.', HttpStatus.BAD_REQUEST);
+        }
+        participateLotteryTxDTO.participant.authInformation = authReturn.data.authInformation;
+      } else {
+        throw new HttpException('인증서버의 알 수 없는 오류입니다 : ' + authReturn.status.toString(), HttpStatus.BAD_REQUEST);
+      }
+    }
     return await this.txService.sendParticipateLotteryTx(participateLotteryTxDTO);
   }
 

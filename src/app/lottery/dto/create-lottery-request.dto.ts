@@ -29,4 +29,7 @@ export class CreateLotteryRequestDTO {
   @ValidateNested()
   @Type(() => BlockInfo)
   targetBlock: BlockInfo;
+
+  authURL: string;
+  authParams: string[];
 }

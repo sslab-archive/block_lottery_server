@@ -14,4 +14,7 @@ export class CreateLotteryTxRequestDto {
 
   targetBlock: BlockInfo;
   serviceProviderHash: string;
+
+  authURL: string;
+  authParams: string[];
 }

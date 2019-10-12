@@ -64,6 +64,9 @@ export class Lottery {
   @Type(() => Transaction)
   drawTx: Transaction[];
 
+  authURL: string;
+  authParams: string[];
+
   static fromDTO(createDTO: CreateLotteryRequestDTO): Lottery {
     const e = new Lottery();
     e.eventName = createDTO.eventName;
@@ -71,7 +74,8 @@ export class Lottery {
     e.status = Status.STATUS_REGISTERD;
     e.createTime = new Date().getUTCSeconds();
     e.deadlineTime = createDTO.deadlineTime;
-
+    e.authURL = createDTO.authURL;
+    e.authParams = createDTO.authParams;
 
     if (createDTO.maxParticipant === 0) {
       e.maxParticipant = 1000000;

@@ -5,7 +5,7 @@ import { Type } from 'class-transformer';
 export class Participant {
   UUID: string;
   information: string;
-
+  authInformation: string;
   @Type(() => Participant)
   participateTx: Transaction;
 }

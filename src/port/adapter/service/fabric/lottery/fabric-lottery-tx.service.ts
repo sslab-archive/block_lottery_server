@@ -1,4 +1,4 @@
-import { HttpService, Inject, Injectable, Type } from '@nestjs/common';
+import { HttpException, HttpService, HttpStatus, Inject, Injectable, Type } from '@nestjs/common';
 import { LotteryTxService } from '../../../../../domain/lottery/lottery-tx.service';
 
 import { Lottery } from '../../../../../domain/lottery/lottery';
@@ -65,12 +65,12 @@ export class FabricLotteryTxService implements LotteryTxService {
       .toPromise()
       .then(async res => {
           if (res.data.success === false) {
-            throw Error(res.data.message);
+            throw new HttpException(res.data.message, 500);
           }
           const l: T = plainToClass(classType, JSON.parse(res.data.response) as T);
           const errors = await validate(l);
           if (errors.length > 0) {
-            throw Error(errors.toString());
+            throw new HttpException(errors.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
           }
           return l;
         },
