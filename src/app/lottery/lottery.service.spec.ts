@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LotteryService } from './lottery.service';
+import * as levelup from 'levelup';
+import * as leveldown from 'leveldown';
 
 describe('LotteryService', () => {
   let service: LotteryService;

@@ -6,6 +6,7 @@ export class Participant {
   UUID: string;
   information: string;
   authInformation: string;
-  @Type(() => Participant)
+  randomEntropy: string;
+  @Type(() => Transaction)
   participateTx: Transaction;
 }

@@ -58,11 +58,11 @@ export class Lottery {
   // transaction info
   @ValidateNested()
   @Type(() => Transaction)
-  eventCreateTx: Transaction[];
+  eventCreateTx: Transaction;
 
   @ValidateNested()
   @Type(() => Transaction)
-  drawTx: Transaction[];
+  drawTx: Transaction;
 
   authURL: string;
   authParams: string[];

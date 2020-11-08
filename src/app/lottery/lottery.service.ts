@@ -37,7 +37,7 @@ export class LotteryService {
     createLotteryTxDTO.submitterAddress = 'not impl';
 
     const targetHeight = await this.blockService.makeTargetBlockHeight(createRequest.deadlineTime);
-    createLotteryTxDTO.targetBlock = BlockInfo.fromData(BlockType.BITCOIN, '', 0, 592224); // targetHeight
+    createLotteryTxDTO.targetBlock = BlockInfo.fromData(BlockType.BITCOIN, '', 0, targetHeight); // targetHeight
     return await this.txService.sendCreateLotteryTx(createLotteryTxDTO);
   }
 
@@ -65,6 +65,7 @@ export class LotteryService {
     participateLotteryTxDTO.participant = new Participant();
     participateLotteryTxDTO.participant.UUID = participateRequest.participantUUID;
     participateLotteryTxDTO.participant.information = participateRequest.participantInfo;
+    participateLotteryTxDTO.participant.randomEntropy = participateRequest.participantEntropy;
     participateLotteryTxDTO.submitterID = ID;
     participateLotteryTxDTO.submitterAddress = 'not Impl';
 
@@ -122,11 +123,8 @@ export class LotteryService {
           throw new HttpException('DRAW_BYZNATINE_PROTOCOL is not supported yet', HttpStatus.INTERNAL_SERVER_ERROR);
         default:
           throw new HttpException('not supported draw type', HttpStatus.BAD_REQUEST);
-
       }
     }
-
     return await this.txService.sendDrawLotteryTx(drawLotteryTxDTO);
-
   }
 }

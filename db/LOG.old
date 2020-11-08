@@ -1,0 +1,5 @@
+2020/11/04-15:20:27.688 e0dc Recovering log #22
+2020/11/04-15:20:27.688 e0dc Level-0 table #24: started
+2020/11/04-15:20:27.693 e0dc Level-0 table #24: 176 bytes OK
+2020/11/04-15:20:27.701 e0dc Delete type=0 #22
+2020/11/04-15:20:27.702 e0dc Delete type=3 #20

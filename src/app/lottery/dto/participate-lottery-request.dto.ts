@@ -7,9 +7,8 @@ export class ParticipateLotteryRequestDTO {
   @IsNotEmpty()
   participantUUID: string;
 
-  @IsString()
-  @IsNotEmpty()
   participantInfo: string;
 
   authParams: string[];
+  participantEntropy: string;
 }
